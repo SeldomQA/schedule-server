@@ -1,11 +1,13 @@
-import os
-
+"""
+author: bugmaster
+date: 2022/11/12
+Redis APScheduler
+"""
 from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
-
-SQLITE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "jobs.sqlite")
+from config import SQLITE_PATH
 
 
 def scheduler():
