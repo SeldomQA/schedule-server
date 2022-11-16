@@ -1,11 +1,22 @@
 import uvicorn
 from datetime import datetime
 from fastapi import FastAPI
-from pydantic import BaseModel
 from utils.scheduler_conf import scheduler
 from utils.redis_lock import lock
+from utils.response import response
+from api_schma import Job
 
 app = FastAPI()
+
+
+def scheduler_launch():
+    """启动所有定时任务"""
+    s = scheduler()
+    s.start()
+    print("start scheduler")
+
+
+app.add_event_handler('startup', scheduler_launch)
 
 
 @lock("test_plan")
@@ -14,35 +25,29 @@ def say_hello(name):
     print(now + f" Hello world, {name}")
 
 
-class Item(BaseModel):
-    seconds: int
-    name: str
-
-
-@app.get("/scheduler/launch")
-def scheduler_launch():
+@app.post("/scheduler/interval/add_job")
+def scheduler_add_job(job: Job):
     """
-    启动所有定时任务
-    :return:
+    定时任务say_hello
+    """
+    s = scheduler()
+    job = s.add_job(say_hello, 'interval', seconds=job.seconds, args=[job.name], id=job.job_id, replace_existing=True)
+    s.start(paused=True)
+    s.pause()
+
+    return response(data={"job_id": job.id})
+
+
+@app.get("/scheduler/remove_job")
+def scheduler_remove_job(job_id: str):
+    """
+    移除定时任务
     """
     s = scheduler()
     s.start()
-    return {" --> A scheduled task has been started!!"}
-
-
-@app.post("/scheduler/interval/hello")
-def scheduler_say_hello(item: Item):
-    """
-    定时任务say_hello
-    :param item:
-    :return:
-    """
-    s = scheduler()
-    s.add_job(say_hello, 'interval', seconds=item.seconds, args=[item.name])
-    s.start(paused=True)
-    s.pause()
-    return {"/scheduler/interval/hello --> running!!"}
+    s.remove_job(job_id=job_id)
+    return response()
 
 
 if __name__ == '__main__':
-    uvicorn.run("main:app")
+    uvicorn.run("main:app", reload=True)
