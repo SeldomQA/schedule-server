@@ -114,5 +114,27 @@ def scheduler_remove_job(job_id: str):
     return response()
 
 
+@app.get("/scheduler/pause_job")
+def scheduler_pause_job(job_id: str):
+    """
+    暂停定时任务
+    """
+    s = scheduler()
+    s.start()
+    s.pause_job(job_id=job_id)
+    return response()
+
+
+@app.get("/scheduler/resume_job")
+def scheduler_resume_job(job_id: str):
+    """
+    恢复定时任务
+    """
+    s = scheduler()
+    s.start()
+    s.resume_job(job_id=job_id)
+    return response()
+
+
 if __name__ == '__main__':
     uvicorn.run("main:app", reload=True)
