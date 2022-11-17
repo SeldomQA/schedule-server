@@ -1,10 +1,11 @@
+import requests
 import uvicorn
 from datetime import datetime
 from fastapi import FastAPI
 from utils.scheduler_conf import scheduler
 from utils.redis_lock import lock
 from utils.response import response
-from api_schma import Job
+from api_schma import DateJob, IntervalJob, CronJob
 
 app = FastAPI()
 
@@ -20,18 +21,82 @@ app.add_event_handler('startup', scheduler_launch)
 
 
 @lock("test_plan")
-def say_hello(name):
+def requests_url(url):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(now + f" Hello world, {name}")
+    print(f"[{now}] {url}")
+    r = requests.get(url)
+    if r.status_code != 200:
+        print(f"[Error] requests error. response\n:{r.text}", )
+
+
+@app.post("/scheduler/date/add_job")
+def scheduler_date_add_job(job: DateJob):
+    """
+    date 定时任务
+    """
+    s = scheduler()
+    job = s.add_job(
+        requests_url,
+        'date',
+        args=[job.url],
+        id=job.job_id,
+        max_instances=1,
+        replace_existing=True,
+        run_date=datetime(job.year, job.month, job.day, job.hour, job.minute, job.second),
+    )
+    s.start(paused=True)
+    s.pause()
+
+    return response(data={"job_id": job.id})
 
 
 @app.post("/scheduler/interval/add_job")
-def scheduler_add_job(job: Job):
+def scheduler_interval_add_job(job: IntervalJob):
     """
-    定时任务say_hello
+    interval 定时任务
+    """
+    if job.weeks is None and job.days is None and job.hours is None and job.minutes is None and job.seconds is None:
+        return response(error={"30001": "Please set the interval."})
+    s = scheduler()
+    job = s.add_job(
+        requests_url,
+        'interval',
+        args=[job.url],
+        id=job.job_id,
+        max_instances=1,
+        replace_existing=True,
+        weeks=job.weeks,
+        days=job.days,
+        hours=job.hours,
+        minutes=job.minutes,
+        seconds=job.seconds,
+    )
+    s.start(paused=True)
+    s.pause()
+
+    return response(data={"job_id": job.id})
+
+
+@app.post("/scheduler/cron/add_job")
+def scheduler_cron_add_job(job: CronJob):
+    """
+    cron 定时任务
     """
     s = scheduler()
-    job = s.add_job(say_hello, 'interval', seconds=job.seconds, args=[job.name], id=job.job_id, replace_existing=True)
+    job = s.add_job(
+        requests_url,
+        'cron',
+        args=[job.url],
+        id=job.job_id,
+        max_instances=1,
+        replace_existing=True,
+        second=job.second,
+        minute=job.minute,
+        hour=job.hour,
+        day=job.day,
+        month=job.month,
+        day_of_week=job.day_of_week,
+    )
     s.start(paused=True)
     s.pause()
 
