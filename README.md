@@ -8,11 +8,23 @@ Scheduled task service based on APScheduler, You can dynamically add scheduled t
 
 ## Starting the service
 
-* running
+* install 
 
 ```shell
 > cd schedule_server
+> pip install -r requirements.txt
+```
+
+* running
+
+```shell
 > python main.py
+
+INFO:     Will watch for changes in these directories: ['/.../schedule-server/schedule_server']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [21905] using StatReload
+INFO:     Started server process [21907]
+INFO:     Waiting for application startup.
 ```
 
 * api doc
