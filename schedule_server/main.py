@@ -6,6 +6,7 @@ from utils.scheduler_conf import scheduler
 from utils.redis_lock import lock
 from utils.response import response
 from api_schma import DateJob, IntervalJob, CronJob
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -18,6 +19,17 @@ def scheduler_launch():
 
 
 app.add_event_handler('startup', scheduler_launch)
+
+
+# 跨域设置
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @lock("test_plan")
