@@ -136,5 +136,43 @@ def scheduler_resume_job(job_id: str):
     return response()
 
 
+@app.get("/scheduler/get_jobs")
+def scheduler_resume_job():
+    """
+    查询定时任务列表
+    """
+    s = scheduler()
+    s.start()
+    jobs = s.get_jobs()
+    schedules = []
+    for job in jobs:
+        print("id: %s, name: %s, trigger: %s, next run: %s" % (job.id, job.name, job.trigger, job.next_run_time))
+        schedules.append({
+            "id": job.id,
+            "name": job.name,
+            "next_run_time": job.next_run_time
+        })
+
+    return response(data=schedules)
+
+
+@app.get("/scheduler/get_job")
+def scheduler_resume_job(job_id: str):
+    """
+    查询某个定时任务
+    """
+    s = scheduler()
+    s.start()
+    job = s.get_job(job_id=job_id)
+    print("id: %s, name: %s, trigger: %s, next run: %s" % (job.id, job.name, job.trigger, job.next_run_time))
+    schedule = {
+        "id": job.id,
+        "name": job.name,
+        "next_run_time": job.next_run_time
+    }
+
+    return response(data=schedule)
+
+
 if __name__ == '__main__':
     uvicorn.run("main:app", reload=True)
