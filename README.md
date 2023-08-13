@@ -66,8 +66,6 @@ __interval__
 {
   "job_id": "interval_job_222",
   "url": "https://httpbin.org/get?id=2",
-  "weeks": 0,
-  "days": 0,
   "hours": 0,
   "minutes": 0,
   "seconds": 10
@@ -104,3 +102,5 @@ __其他接口__
 * 删除定时任务：`http://127.0.0.1:8000/scheduler/remove_job?job_id=interval_job_222`
 * 暂停定时任务：`http://127.0.0.1:8000/scheduler/pause_job?job_id=interval_job_222`
 * 恢复定时任务：`http://127.0.0.1:8000/scheduler/resume_job?job_id=interval_job_222`
+* 查询定时任务：`http://127.0.0.1:8000/scheduler/get_job?job_id=interval_job_222`
+* 查询所有定时任务：`http://127.0.0.1:8000/scheduler/get_jobs`
