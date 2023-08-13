@@ -2,11 +2,17 @@ import requests
 import uvicorn
 from datetime import datetime
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
+from apscheduler.triggers.interval import IntervalTrigger
+
 from utils.scheduler_conf import scheduler
 from utils.redis_lock import lock
 from utils.response import response
+from utils.jobs import cron_job_data, date_job_data, interval_job_data, get_job_name
 from api_schma import DateJob, IntervalJob, CronJob
-from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 
@@ -67,7 +73,7 @@ def scheduler_interval_add_job(job: IntervalJob):
     """
     interval 定时任务
     """
-    if job.weeks is None and job.days is None and job.hours is None and job.minutes is None and job.seconds is None:
+    if job.hours is None and job.minutes is None and job.seconds is None:
         return response(error={"30001": "Please set the interval."})
     s = scheduler()
     job = s.add_job(
@@ -77,8 +83,6 @@ def scheduler_interval_add_job(job: IntervalJob):
         id=job.job_id,
         max_instances=1,
         replace_existing=True,
-        weeks=job.weeks,
-        days=job.days,
         hours=job.hours,
         minutes=job.minutes,
         seconds=job.seconds,
@@ -158,14 +162,33 @@ def scheduler_resume_job():
     jobs = s.get_jobs()
     schedules = []
     for job in jobs:
-        print("id: %s, name: %s, trigger: %s, next run: %s" % (job.id, job.name, job.trigger, job.next_run_time))
+        job_type = None
+        job_data = None
+        if isinstance(job.trigger, CronTrigger):
+            job_type = "cron"
+            job_data = cron_job_data(job.trigger)
+        elif isinstance(job.trigger, DateTrigger):
+            job_type = "data"
+            job_data = date_job_data(job.trigger)
+        elif isinstance(job.trigger, IntervalTrigger):
+            job_type = "interval"
+            job_data = interval_job_data(job.trigger)
+
         schedules.append({
-            "id": job.id,
+            "job_id": job.id,
             "name": job.name,
+            "type": job_type,
+            "data": job_data,
+            "request_url": get_job_name(job),
             "next_run_time": job.next_run_time
         })
 
-    return response(data=schedules)
+    tasks = {
+        "task_list": schedules,
+        "total": len(schedules)
+    }
+
+    return response(data=tasks)
 
 
 @app.get("/scheduler/get_job")
@@ -176,10 +199,25 @@ def scheduler_resume_job(job_id: str):
     s = scheduler()
     s.start()
     job = s.get_job(job_id=job_id)
-    print("id: %s, name: %s, trigger: %s, next run: %s" % (job.id, job.name, job.trigger, job.next_run_time))
+
+    job_type = None
+    job_data = None
+    if isinstance(job.trigger, CronTrigger):
+        job_type = "cron"
+        job_data = cron_job_data(job.trigger)
+    elif isinstance(job.trigger, DateTrigger):
+        job_type = "data"
+        job_data = date_job_data(job.trigger)
+    elif isinstance(job.trigger, IntervalTrigger):
+        job_type = "interval"
+        job_data = interval_job_data(job.trigger)
+
     schedule = {
-        "id": job.id,
+        "job_id": job.id,
         "name": job.name,
+        "type": job_type,
+        "data": job_data,
+        "request_url": get_job_name(job),
         "next_run_time": job.next_run_time
     }
 

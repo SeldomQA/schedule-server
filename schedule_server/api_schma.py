@@ -15,8 +15,6 @@ class DateJob(BaseModel):
 class IntervalJob(BaseModel):
     job_id: str
     url: str
-    weeks: int = None
-    days: int = None
     hours: int = None
     minutes: int = None
     seconds: int = None
