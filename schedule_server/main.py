@@ -153,13 +153,18 @@ def scheduler_resume_job(job_id: str):
 
 
 @app.get("/scheduler/get_jobs")
-def scheduler_resume_job():
+def scheduler_resume_job(job_id: str = None):
     """
     查询定时任务列表
     """
     s = scheduler()
     s.start()
-    jobs = s.get_jobs()
+    jobs = []
+    if job_id is not None:
+        job = s.get_job(job_id=job_id)
+        jobs.append(job)
+    else:
+        jobs = s.get_jobs()
     schedules = []
     for job in jobs:
         job_type = None
