@@ -8,7 +8,15 @@
       "path": "./tsconfig.app.json"
     },
     {
-      "path": "./tsconfig.cypress-ct.json"
+      "path": "./tsconfig.vitest.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "types": [
+      "node"
+    ],
+    "moduleResolution": "node",
+    // "types" :["element-plus/global"]
+  },
+  
 }

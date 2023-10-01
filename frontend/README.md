@@ -1,62 +1,65 @@
-# frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Schedule-Server前端UI，用于 `定时任务` 数据的可视化管理。
 
-## Recommended IDE Setup
+## 1. 使用说明
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+**使用步骤**
 
-## Type Support for `.vue` Imports in TS
+### 1.1. 本地启动
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+1. `npm install` 安装项目依赖。
+2. 以开发模式启动项目：`npm run dev`。
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+### 1.2. 私有部署
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+1. `npm install` 安装项目依赖。
+2. 生产环境打包：`npm run build`。
+3. 将打包后生成的 dist 目录下的文件部署到相应服务器下。这里以 Nginx 为例。
 
-## Customize configuration
+**域名部署**
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+vite.config.ts 基础路径配置。
 
-## Project Setup
-
-```sh
-npm install
+```
+base: './',
 ```
 
-### Compile and Hot-Reload for Development
+Nginx 配置。
 
-```sh
-npm run dev
+
+```
+    location / {
+        root /home/wwwroot/frontend;
+        index index.html;
+        try_files $uri $uri/ index.html;
+    }
 ```
 
-### Type-Check, Compile and Minify for Production
+**二级目录部署**
 
-```sh
-npm run build
+vite.config.ts 中修改二级目录路径，这里是 wiremock。
+
+```
+base: '/wiremock',
 ```
 
-### Run Headed Component Tests with [Cypress Component Testing](https://on.cypress.io/component)
+Nginx 配置。
 
-```sh
-npm run test:unit:dev # or `npm run test:unit` for headless testing
+```
+    location ^~ /wiremock {
+        alias /home/wwwroot/frontend/;
+        index index.html;
+        try_files $uri $uri/ /frontend/index.html;
+    }
 ```
 
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+## 2. 开发项目
 
-```sh
-npm run test:e2e:dev
-```
+推荐开发环境：VSCode + Vue Language Features (Volar) 插件。
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
+- 以开发模式启动项目：`npm run dev`。
+- 运行单元测试：`npm run test:unit`。
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+## 3. Todo List
 
-```sh
-npm run build
-npm run test:e2e
-```
+- [ ] feature：...
