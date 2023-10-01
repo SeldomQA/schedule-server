@@ -162,7 +162,8 @@ def scheduler_resume_job(job_id: str = None):
     jobs = []
     if job_id is not None:
         job = s.get_job(job_id=job_id)
-        jobs.append(job)
+        if job is not None:
+            jobs.append(job)
     else:
         jobs = s.get_jobs()
     schedules = []
