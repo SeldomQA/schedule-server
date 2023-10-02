@@ -45,7 +45,9 @@
                     <label class="first-line">
                       <span>{{ item.job_id }}</span>
                       <div class="status-flag">
-                        <span v-if="isUnsave(item)" class="unsave-flag">*</span>
+                        <span v-if="isUnsave(item)" class="unsave-flag">
+                          <el-icon><Edit /></el-icon>
+                        </span>
                       </div>
                     </label>
                     <label class="second-line">
@@ -104,19 +106,12 @@
                             </template>
                             <general-info></general-info>
                         </el-collapse-item>
-                        <!-- Request -->
-                        <el-collapse-item name="Request">
+                        <!-- timed -->
+                        <el-collapse-item name="定时">
                             <template #title>
-                                <b>Request</b>
+                                <b>定时</b>
                             </template>
-                            <!-- <request></request> -->
-                        </el-collapse-item>
-                        <!-- Response -->
-                        <el-collapse-item name="Response">
-                            <template #title>
-                                <b>Response</b>
-                            </template>
-                            <!-- <response></response> -->
+                            <timed-data></timed-data>
                         </el-collapse-item>
                     </el-collapse>
                 </el-form>
@@ -154,8 +149,7 @@ import { renderDataToApiData } from '@/service/render/convert/renderDataToApiDat
 
 import StatusTag from '../components/StatusTag.vue'
 import GeneralInfo from './GeneralInfo.vue'
-import Request from './Request.vue'
-import Response from './Response.vue'
+import TimedData from './TimedData.vue'
 
 const Webhook = defineAsyncComponent(() =>
     import('./Webhook.vue')
