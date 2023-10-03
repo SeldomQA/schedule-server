@@ -5,11 +5,11 @@
   <el-form-item label="名称" prop="name">
       <el-input v-model="selectedItem!.name"></el-input>
   </el-form-item>
-  <el-form-item label="下一次运行时间" prop="next_run_time">
-    <el-input v-model="selectedItem!.next_run_time"></el-input>
-  </el-form-item>
   <el-form-item label="请求" prop="request_url">
     <el-input v-model="selectedItem!.request_url"></el-input>
+  </el-form-item>
+  <el-form-item label="下一次运行时间" prop="next_run_time">
+    <el-input v-model="selectedItem!.next_run_time"></el-input>
   </el-form-item>
 </template>
 

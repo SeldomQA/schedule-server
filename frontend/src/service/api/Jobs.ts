@@ -232,6 +232,7 @@ export interface IJob {
   name?: string,                 //job 名称
   next_run_time?: string,         // 下一次运行的时间
   request_url?: string,          // 请求的 URL 地址
+  type: string,                  // 定时任务类型
   data: {
     day?: [string, number],
     day_of_week?: [string, number],
