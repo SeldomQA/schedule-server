@@ -174,7 +174,7 @@ def scheduler_resume_job(job_id: str = None):
             job_type = "cron"
             job_data = cron_job_data(job.trigger)
         elif isinstance(job.trigger, DateTrigger):
-            job_type = "data"
+            job_type = "date"
             job_data = date_job_data(job.trigger)
         elif isinstance(job.trigger, IntervalTrigger):
             job_type = "interval"
@@ -212,7 +212,7 @@ def scheduler_resume_job(job_id: str):
         job_type = "cron"
         job_data = cron_job_data(job.trigger)
     elif isinstance(job.trigger, DateTrigger):
-        job_type = "data"
+        job_type = "date"
         job_data = date_job_data(job.trigger)
     elif isinstance(job.trigger, IntervalTrigger):
         job_type = "interval"

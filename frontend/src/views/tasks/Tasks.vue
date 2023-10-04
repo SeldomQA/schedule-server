@@ -107,7 +107,7 @@
                             <general-info></general-info>
                         </el-collapse-item>
                         <!-- timed -->
-                        <el-collapse-item name="定时">
+                        <el-collapse-item name="Timed">
                             <template #title>
                                 <b>定时</b>
                             </template>
@@ -345,7 +345,7 @@ const onClickListItem = (item: IJob, index: number) => {
 const isShowFormEdit = ref(true)
 
 // 3.1 表单编辑
-const activeCollapseNames = ref(['General', 'Request', 'Response', 'Webhook1', 'Webhook2', 'Webhook3', 'Webhook4', 'Webhook5'])
+const activeCollapseNames = ref(['General', 'Timed'])
 
 /**
  * 保存按钮：创建或更新 StubMapping
