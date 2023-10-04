@@ -297,8 +297,6 @@ export const R_Mappings = (mockUrl: string, params: ISearchOptions) => {
 
 /**
  * 查询指定【 baseUrl 】jobs 列表数据
- * 
- * 
  * @param baseUrl
  * @returns {*}
  */
@@ -311,8 +309,8 @@ export const GetJobs = (baseUrl: string) => {
 
 
 /**
- * 查询指定【 mockUrl 】中，指定【 mappingUUID 】的 mapping 信息
- * @param mockUrl
+ * 查询指定【 mockUrl 】中，指定【 jobID 】的 mapping 信息
+ * @param baseUrl
  * @param jobID
  * @returns {*}
  */
@@ -324,16 +322,14 @@ export const R_Mapping = (baseUrl: string, jobID: string) => {
 };
 
 /**
- * 删除指定【 mockUrl 】中，指定【 mappingUUID 】的 mapping 信息
- * @param mockUrl
- * @param mappingUUID
+ * 删除指定【 mockUrl 】中，指定【 jobID 】的 mapping 信息
+ * @param baseUrl
+ * @param jobID
  * @returns {*}
  */
-export const D_Mapping = (mockUrl: string, mappingUUID: string) => {
+export const D_Mapping = (baseUrl: string, jobID: string) => {
   return httpSingle({
-    url: `${mockUrl}/__admin/mappings/${mappingUUID}`,
-    method: 'delete'
+    url: `${baseUrl}/scheduler/remove_job?job_id=${jobID}`,
+    method: 'get'
   });
 };
-
-

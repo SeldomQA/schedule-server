@@ -14,7 +14,7 @@
             </el-input>
           </el-form-item>
           <el-form-item>
-              <el-button :icon="Plus" type="primary" @click="addStubMapping">添加</el-button>
+              <el-button :icon="Plus" type="primary" @click="addJob">添加</el-button>
           </el-form-item>
           <el-form-item>
               <el-button :icon="Refresh" type="warning" @click="refreshListData">刷新</el-button>
@@ -269,20 +269,26 @@ const getJobByID = async () => {
 }
 
 /**
- * 添加一个默认 Stub Mapping 到列表（未保存）
+ * 添加一个默认 job 到列表（未保存）
  */
-const addStubMapping = () => {
-    if (tableData.value.length && !tableData.value[0].id) return;
-    const item = apiDataToRenderData({
-        name: '请输入 Stub Mapping 名称',
-        priority: 5,
-        persistent: true,
-        request: {
-            method: 'GET',
-            url: '/example'
-        },
-        response: {}
-    });
+const addJob = () => {
+    if (tableData.value.length && !tableData.value[0].job_id) return;
+    let timestamp = Date.parse(new Date().toString());
+    let item = {
+      "job_id": "job_" + timestamp,
+      "type": "date",
+      "name": "requests_url",
+      "request_url": "https://httpbin.org/get?id=1",
+      "data": {
+        "year": 2023,
+        "month": 10,
+        "day": 5,
+        "hour": 1,
+        "minute": 11,
+        "second": 12
+      }
+    }
+
     tableData.value.unshift(item);
     switchSelectedItem(0)
 }
@@ -400,7 +406,7 @@ const deleteStubMappingByID = () => {
         tableData.value.shift()
         switchSelectedItem(0)
     } else {
-        D_Mapping(currentMockUrl.value, selectedItem.value!.job_id as string).then(() => {
+        D_Mapping(baseUrl, selectedItem.value!.job_id as string).then(() => {
             ElMessage({
                 type: 'success',
                 message: '删除成功',
