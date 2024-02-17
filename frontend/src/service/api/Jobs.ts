@@ -245,53 +245,75 @@ export interface IJob {
   }
 }
 
+export interface DJob {
+  job_id?: string,            // job ID
+  url?: string,               // 请求的 URL 地址
+  year?: [string, number],
+  month?: [string, number],
+  day?: [string, number],
+  hour?: [string, number],
+  minute?: [string, number],
+  second?: [string, number]
+}
+
+export interface CJob {
+  job_id?: string,            // job ID
+  url?: string,               // 请求的 URL 地址
+  day_of_week?: [string, number],
+  month?: [string, number],
+  day?: [string, number],
+  hour?: [string, number],
+  minute?: [string, number],
+  second?: [string, number]
+}
+
+export interface TJob {
+  job_id?: string,            // job ID
+  url?: string,               // 请求的 URL 地址
+  hours?: [string, number],
+  minutes?: [string, number],
+  seconds?: [string, number]
+}
+
 /**
- * 指定【 mockUrl 】新增 mapping
+ * 指定【 baseUrl 】新增 date定时任务
  * @param mockUrl
  * @param params
  * @returns {*}
  */
-export const C_Mapping = (mockUrl: string, params: IJob) => {
+export const C_DateJob = (baseUrl: string, params: DJob) => {
   return httpSingle({
-    url: `${mockUrl}/__admin/mappings`,
+    url: `${baseUrl}/scheduler/date/add_job`,
     method: 'post',
     data: params
   });
 };
 
 /**
- * 修改指定【 mockUrl 】中，指定【 mappingUUID 】的 mapping 信息
- * @param mockUrl
- * @param mappingUUID
+ * 指定【 baseUrl 】新增 cron定时任务
+ * @param baseUrl
  * @param params
  * @returns {*}
  */
-export const U_Mapping = (mockUrl: string, mappingUUID: string, params: IJob) => {
+export const C_CronJob = (baseUrl: string, params: CJob) => {
   return httpSingle({
-    url: `${mockUrl}/__admin/mappings/${mappingUUID}`,
-    method: 'put',
+    url: `${baseUrl}/scheduler/cron/add_job`,
+    method: 'post',
     data: params
   });
 };
 
 /**
- * 查询指定【 mockUrl 】mapping 列表数据
- * 
- * 查询结果为 [offset, offset + limit -1]
- * 
- * @param mockUrl
+ * 指定【 baseUrl 】新增 interval定时任务
+ * @param baseUrl
  * @param params
  * @returns {*}
  */
-interface ISearchOptions {
-  offset: number,         //开始索引，从 0 开始，包括 0
-  limit: number           //查询数量
-}
-export const R_Mappings = (mockUrl: string, params: ISearchOptions) => {
+export const C_IntervalJob = (baseUrl: string, params: TJob) => {
   return httpSingle({
-    url: `${mockUrl}/__admin/mappings`,
-    method: 'get',
-    params: params
+    url: `${baseUrl}/scheduler/interval/add_job`,
+    method: 'post',
+    data: params
   });
 };
 
@@ -300,21 +322,20 @@ export const R_Mappings = (mockUrl: string, params: ISearchOptions) => {
  * @param baseUrl
  * @returns {*}
  */
-export const GetJobs = (baseUrl: string) => {
+export const R_Jobs = (baseUrl: string) => {
   return httpSingle({
     url: `${baseUrl}/scheduler/get_jobs`,
     method: 'get'
   });
 };
 
-
 /**
- * 查询指定【 mockUrl 】中，指定【 jobID 】的 mapping 信息
+ * 查询指定【 baseUrl 】中，指定【 jobID 】的 mapping 信息
  * @param baseUrl
  * @param jobID
  * @returns {*}
  */
-export const R_Mapping = (baseUrl: string, jobID: string) => {
+export const R_Job = (baseUrl: string, jobID: string) => {
   return httpSingle({
     url: `${baseUrl}/scheduler/get_jobs?job_id=${jobID}`,
     method: 'get'
@@ -327,7 +348,7 @@ export const R_Mapping = (baseUrl: string, jobID: string) => {
  * @param jobID
  * @returns {*}
  */
-export const D_Mapping = (baseUrl: string, jobID: string) => {
+export const D_Job = (baseUrl: string, jobID: string) => {
   return httpSingle({
     url: `${baseUrl}/scheduler/remove_job?job_id=${jobID}`,
     method: 'get'

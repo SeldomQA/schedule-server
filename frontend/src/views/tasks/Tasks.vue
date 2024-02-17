@@ -134,15 +134,16 @@ import baseUrl from "@/config/base-url";
 
 import { storeToRefs } from 'pinia';
 import { onBeforeMount, onMounted, ref, reactive, watch, defineAsyncComponent, h } from 'vue';
-import { computed } from '@vue/reactivity';
+import { computed } from 'vue';
 import { Search, Plus, Refresh, RefreshLeft, Right, Finished, Delete, CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox, type Action, type FormRules } from 'element-plus';
 
 import { isEmpty, formatDateTime, cloneJson } from '@/lib/helper'
 import { ErrorHandler } from '@/lib/axios'
 import { useShareStatesStore } from '@/stores/UseShareStatesStore'
-// import { type IStubMapping, R_Mappings, R_Mapping, C_Mapping, U_Mapping, D_Mapping , GetJobs} from '@/service/api/StubMappings'
-import { type IJob, R_Mappings, R_Mapping, C_Mapping, U_Mapping, D_Mapping , GetJobs} from '@/service/api/Jobs'
+// import { type IStubMapping, R_Mappings, R_Mapping, C_Mapping, U_Mapping, D_Mapping} from '@/service/api/StubMappings'
+import { R_Job, C_DateJob, C_CronJob, C_IntervalJob, D_Job , R_Jobs} from '@/service/api/Jobs'
+import { type IJob, DJob, CJob, TJob} from '@/service/api/Jobs'
 import { jobDataStyle } from '@/service/render/style'
 import { apiDataToRenderData } from '@/service/render/convert/apiDataToRenderData'
 import { renderDataToApiData } from '@/service/render/convert/renderDataToApiData'
@@ -162,7 +163,7 @@ const { currentMockUrl, selectedItem, selectedIndex, currentJobID, resetItem } =
 const tableData = ref([] as any[])
 const pageNum = ref(1)
 const pageSize = ref(10)
-const fromNum = computed(() => (pageNum.value - 1) * pageSize.value + (total ? 1 : 0))
+const fromNum = computed(() => (pageNum.value - 1) * pageSize.value + (total.value ? 1 : 0))
 const toNum = computed(() => (pageNum.value * pageSize.value) > total.value ? total.value : (pageNum.value * pageSize.value))
 
 
@@ -174,7 +175,7 @@ onMounted(() => {
  * jobs 列表查询
  */
 const getTasksJobs = async (isUserAction: boolean) => {
-  await GetJobs(baseUrl).then((res: any) => {
+  await R_Jobs(baseUrl).then((res: any) => {
       tableData.value = (res.data.task_list || []).map((item: any) => {
         return item;
       });
@@ -244,7 +245,7 @@ const getJobByID = async () => {
         ElMessage({ type: 'warning', message: '请输入 Job 的 ID' })
         return
     }
-    await R_Mapping(baseUrl, jobID.value).then((res: any) => {
+    await R_Job(baseUrl, jobID.value).then((res: any) => {
        tableData.value = (res.data.task_list || []).map((item: any) => {
         return item;
       });
@@ -280,9 +281,9 @@ const addJob = () => {
       "name": "requests_url",
       "request_url": "https://httpbin.org/get?id=1",
       "data": {
-        "year": 2023,
-        "month": 10,
-        "day": 5,
+        "year": 2024,
+        "month": 2,
+        "day": 22,
         "hour": 1,
         "minute": 11,
         "second": 12
@@ -330,9 +331,6 @@ const localSearch = (item: any) => {
  * @param index 被选中的列表项索引
  */
 const onClickListItem = (item: IJob, index: number) => {
-  console.log("selectedItem.value", selectedItem)
-  console.log("item", item)
-  console.log("index", index)
   // 如果要选中的与已选中的是同一个，则立即返回，不做处理
   if (selectedItem && selectedItem.value === tableData.value[index]) return
 
@@ -340,7 +338,6 @@ const onClickListItem = (item: IJob, index: number) => {
   let removeFirst = false
   if (!tableData.value[0].id) removeFirst = true
   saveItemBeforeNextAction().then((action: Action) => {
-    console.log("action", action)
     if (action === 'confirm' || action === 'cancel') {
         switchSelectedItem(removeFirst && action === 'cancel' ? --index : index)
     }
@@ -357,21 +354,76 @@ const activeCollapseNames = ref(['General', 'Timed'])
  * 保存按钮：创建或更新 StubMapping
  */
 const saveStubMapping = () => {
+    console.log('save task')
     // if (selectedItem.value!.metadata.wmui.createTime) {
     //     selectedItem.value!.metadata.wmui.updateTime = formatDateTime(new Date().getTime())
     // } else {
     //     selectedItem.value!.metadata.wmui.createTime = formatDateTime(new Date().getTime())
     // }
-    // // 如果是添加未保存的数据
-    // if (!selectedItem.value!.id) {
-    //     C_Mapping(currentMockUrl.value, renderDataToApiData(selectedItem.value as IStubMapping)).then((res: any) => {
-    //         // 新增数据后当前页列表条数加一，需要刷新，重新计算 total 和 pageNum
-    //         getTasksJobs(false)
-    //     }).catch((err) => {
-    //         ErrorHandler.create(err).end()
-    //     })
-    //     return
-    // }
+    
+    // 如果是添加未保存的数据
+    console.log('ss', selectedItem.value, baseUrl)
+
+    if (!selectedItem.value!.id) {
+        if (selectedItem.value.type === 'date') {
+            // 创建一个符合 DateJob 接口的对象
+            const myJob: DJob = {
+                job_id: selectedItem.value.job_id,
+                url: selectedItem.value.request_url,
+                year: selectedItem.value.data.year,
+                month: selectedItem.value.data.month,
+                day: selectedItem.value.data.day,
+                hour: selectedItem.value.data.hour,
+                minute: selectedItem.value.data.minute,
+                second: selectedItem.value.data.second
+            };
+            C_DateJob(baseUrl, myJob as DJob).then((res: any) => {
+                console.log('res', res)
+                // 新增数据后当前页列表条数加一，需要刷新，重新计算 total 和 pageNum
+                getTasksJobs(false)
+            }).catch((err) => {
+                ErrorHandler.create(err).end()
+            })
+        } else if (selectedItem.value.type === 'cron') {
+            // 创建一个符合 DateJob 接口的对象
+            const myJob: CJob = {
+                job_id: selectedItem.value.job_id,
+                url: selectedItem.value.request_url,
+                day_of_week: selectedItem.value.data.day_of_week,
+                month: selectedItem.value.data.month,
+                day: selectedItem.value.data.day,
+                hour: selectedItem.value.data.hour,
+                minute: selectedItem.value.data.minute,
+                second: selectedItem.value.data.second
+            };
+            C_CronJob(baseUrl, myJob as CJob).then((res: any) => {
+                console.log('res', res)
+                // 新增数据后当前页列表条数加一，需要刷新，重新计算 total 和 pageNum
+                getTasksJobs(false)
+            }).catch((err) => {
+                ErrorHandler.create(err).end()
+            })
+        } else if (selectedItem.value.type === 'interval') {
+            // 创建一个符合 DateJob 接口的对象
+            const myJob: TJob = {
+                job_id: selectedItem.value.job_id,
+                url: selectedItem.value.request_url,
+                hours: selectedItem.value.data.hour,
+                minutes: selectedItem.value.data.minute,
+                seconds: selectedItem.value.data.second
+            };
+            C_IntervalJob(baseUrl, myJob as TJob).then((res: any) => {
+                console.log('res', res)
+                // 新增数据后当前页列表条数加一，需要刷新，重新计算 total 和 pageNum
+                getTasksJobs(false)
+            }).catch((err) => {
+                ErrorHandler.create(err).end()
+            })
+        } 
+
+
+        return
+    }
     // // 如果是修改未保存的数据
     // if (JSON.stringify(selectedItem.value) !== JSON.stringify(resetItem.value)) {
     //     U_Mapping(currentMockUrl.value, selectedItem.value!.id as string, renderDataToApiData(selectedItem.value as IStubMapping)).then((res: any) => {
@@ -406,7 +458,7 @@ const deleteStubMappingByID = () => {
         tableData.value.shift()
         switchSelectedItem(0)
     } else {
-        D_Mapping(baseUrl, selectedItem.value!.job_id as string).then(() => {
+        D_Job(baseUrl, selectedItem.value!.job_id as string).then(() => {
             ElMessage({
                 type: 'success',
                 message: '删除成功',
