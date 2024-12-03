@@ -6,7 +6,7 @@ Redis redLock
 from time import sleep
 import functools
 from redlock import RedLock
-from config import Config
+from config import RedisCluster
 
 
 def lock(key):
@@ -15,7 +15,7 @@ def lock(key):
         def wrapper(*args, **kwargs):
             # If there is a lock, it is not executed
             red_lock = RedLock(f"distributed_lock:{func.__name__}:{key}:{str(args)}",
-                               connection_details=Config.RedisCluster)
+                               connection_details=RedisCluster)
             if red_lock.acquire() is False:
                 return func(*args, **kwargs)
 

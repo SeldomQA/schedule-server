@@ -1,4 +1,5 @@
-import requests
+from loguru import logger
+
 import uvicorn
 from datetime import datetime
 from fastapi import FastAPI
@@ -8,11 +9,11 @@ from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
 from utils.scheduler_conf import scheduler
-from utils.redis_lock import lock
+
 from utils.response import response
 from utils.jobs import cron_job_data, date_job_data, interval_job_data, get_job_name
 from api_schma import DateJob, IntervalJob, CronJob
-
+from task import requests_url
 
 app = FastAPI()
 
@@ -21,7 +22,7 @@ def scheduler_launch():
     """启动所有定时任务"""
     s = scheduler()
     s.start()
-    print("start scheduler")
+    logger.info("start scheduler")
 
 
 app.add_event_handler('startup', scheduler_launch)
@@ -37,14 +38,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@lock("test_plan")
-def requests_url(url):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(f"[{now}] {url}")
-    r = requests.get(url)
-    if r.status_code != 200:
-        print(f"[Error] requests error. response\n:{r.text}", )
 
 
 @app.post("/scheduler/date/add_job")
