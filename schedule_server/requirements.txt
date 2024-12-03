@@ -5,3 +5,4 @@ redlock==1.2.0
 requests==2.32.3
 sqlalchemy==2.0.36
 pytz==2024.2
+loguru==0.7.2
