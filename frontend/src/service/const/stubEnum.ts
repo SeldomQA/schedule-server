@@ -1,17 +1,17 @@
 // 1. General Info
 
-const PRIORITY = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const PRIORITY = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 // 2. Request Enum
 
-const REQUEST_METHOD = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD', 'TRACE', 'ANY'];
+const REQUEST_METHOD = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD', 'TRACE', 'ANY']
 const URL_MATCH_TYPE = [
   { label: 'Path and query', value: 'url' },
   { label: 'Path and query regex', value: 'urlPattern' },
   { label: 'Path', value: 'urlPath' },
   { label: 'Path regex', value: 'urlPathPattern' },
   { label: 'Any URL', value: 'any' }
-];
+]
 
 // 2.1 Predicate
 const ALL_PREDICATE_COLLECTION = [
@@ -48,18 +48,8 @@ const NO_SUBPREDICATE_COLLECTION = [
   'equalToJson',
   'equalToXml'
 ]
-const MULTI_SUBPREDICATE_COLLECTION = [
-  'hasExactly',
-  'includes',
-  'and',
-  'or'
-]
-const SUBPREDICATE_NO_KEY_COLLECTION = [
-  'hasExactly',
-  'includes',
-  'and',
-  'or'
-]
+const MULTI_SUBPREDICATE_COLLECTION = ['hasExactly', 'includes', 'and', 'or']
+const SUBPREDICATE_NO_KEY_COLLECTION = ['hasExactly', 'includes', 'and', 'or']
 const NO_VALUE_PREDICATE_COLLECTION = [
   'hasExactly',
   'includes',
@@ -69,12 +59,22 @@ const NO_VALUE_PREDICATE_COLLECTION = [
   'matchesXPath'
 ]
 
-
 // 2.2 Predicate Param Key
 const equalToParams = ['caseInsensitive']
-const timeParams = ['expectedOffset', 'expectedOffsetUnit', 'truncateExpected', 'truncateActual', 'actualFormat']
+const timeParams = [
+  'expectedOffset',
+  'expectedOffsetUnit',
+  'truncateExpected',
+  'truncateActual',
+  'actualFormat'
+]
 const equalToJsonParams = ['ignoreArrayOrder', 'ignoreExtraElements']
-const equalToXmlParams = ['enablePlaceholders', 'placeholderOpeningDelimiterRegex', 'placeholderClosingDelimiterRegex', 'exemptedComparisons']
+const equalToXmlParams = [
+  'enablePlaceholders',
+  'placeholderOpeningDelimiterRegex',
+  'placeholderClosingDelimiterRegex',
+  'exemptedComparisons'
+]
 const matchesXPathParams = ['xPathNamespaces']
 const PREDICATE_PARAMS_COLLETION = new Map([
   ['equalTo', equalToParams],
@@ -98,14 +98,8 @@ const INPUT_PARAM_COLLECTION = [
   'placeholderOpeningDelimiterRegex',
   'placeholderClosingDelimiterRegex'
 ]
-const SINGLE_SELECT_PARAM_COLLECTION = [
-  'expectedOffsetUnit',
-  'truncateExpected',
-  'truncateActual',
-]
-const MULTI_SELECT_PARAM_COLLECTION = [
-  'exemptedComparisons'
-]
+const SINGLE_SELECT_PARAM_COLLECTION = ['expectedOffsetUnit', 'truncateExpected', 'truncateActual']
+const MULTI_SELECT_PARAM_COLLECTION = ['exemptedComparisons']
 
 // 2.3 Predicate Param Value
 const offsetUnitOptions = ['seconds', 'minutes', 'hours', 'days', 'months', 'years']
@@ -145,80 +139,91 @@ const PREDICATE_PARAM_OPTIONS_COLLECTION: {
 }
 
 // 2.4 Predicate Param Default Value
-const equalToParamsDefaultValue = [{
-  enabled: false,
-  key: "caseInsensitive"
-}]
+const equalToParamsDefaultValue = [
+  {
+    enabled: false,
+    key: 'caseInsensitive'
+  }
+]
 const truncateParamsDefaultValue = [
   {
-      enabled: false,
-      key: 'expectedOffset',
-      value: 0
-  }, {
-      enabled: false,
-      key: 'expectedOffsetUnit',
-      value: 'months'
-  }, {
-      enabled: false,
-      key: 'truncateExpected',
-      value: 'first day of month'
-  }, {
-      enabled: false,
-      key: 'truncateActual',
-      value: 'first day of month'
-  }, {
-      enabled: false,
-      key: 'actualFormat',
-      value: 'dd/MM/yyyy'
+    enabled: false,
+    key: 'expectedOffset',
+    value: 0
+  },
+  {
+    enabled: false,
+    key: 'expectedOffsetUnit',
+    value: 'months'
+  },
+  {
+    enabled: false,
+    key: 'truncateExpected',
+    value: 'first day of month'
+  },
+  {
+    enabled: false,
+    key: 'truncateActual',
+    value: 'first day of month'
+  },
+  {
+    enabled: false,
+    key: 'actualFormat',
+    value: 'dd/MM/yyyy'
   }
 ]
 const equalToJsonParamsDefaultValue = [
   {
-      enabled: false,
-      key: 'ignoreArrayOrder'
-  }, {
-      enabled: false,
-      key: 'ignoreExtraElements'
+    enabled: false,
+    key: 'ignoreArrayOrder'
+  },
+  {
+    enabled: false,
+    key: 'ignoreExtraElements'
   }
 ]
 const equalToXmlParamsDefaultValue = [
   {
-      enabled: false,
-      key: 'enablePlaceholders'
-  }, {
-      enabled: false,
-      key: 'placeholderOpeningDelimiterRegex',
-      value: '\\[\\['
-  }, {
-      enabled: false,
-      key: 'placeholderClosingDelimiterRegex',
-      value: ']]'
-  }, {
-      enabled: false,
-      key: 'exemptedComparisons',
-      value: []
+    enabled: false,
+    key: 'enablePlaceholders'
+  },
+  {
+    enabled: false,
+    key: 'placeholderOpeningDelimiterRegex',
+    value: '\\[\\['
+  },
+  {
+    enabled: false,
+    key: 'placeholderClosingDelimiterRegex',
+    value: ']]'
+  },
+  {
+    enabled: false,
+    key: 'exemptedComparisons',
+    value: []
   }
 ]
 const matchesJsonPathParamsDefaultValue = [
   {
-      enabled: true,
-      key: 'subPredicate'
+    enabled: true,
+    key: 'subPredicate'
   }
 ]
 const matchesXPathParamsDefaultValue = [
   {
-      enabled: true,
-      key: 'subPredicate'
-  }, {
-      enabled: false,
-      key: 'xPathNamespaces',
-      value: []
+    enabled: true,
+    key: 'subPredicate'
+  },
+  {
+    enabled: false,
+    key: 'xPathNamespaces',
+    value: []
   }
 ]
-const PREDICATE_PARAM_DEFAULT_VALUE:{
+const PREDICATE_PARAM_DEFAULT_VALUE: {
   [key: string]: {
-    enabled: boolean,
-    key: string,
+    enabled: boolean
+    key: string
     value?: string | number | Array<any>
   }[]
 } = {
@@ -234,9 +239,7 @@ const PREDICATE_PARAM_DEFAULT_VALUE:{
 
 // 4. Webhook
 
-const WEBHOOK_METHOD = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'TRACE'];
-
-
+const WEBHOOK_METHOD = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'TRACE']
 
 export default {
   PRIORITY,

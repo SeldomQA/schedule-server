@@ -1,7 +1,7 @@
 <template>
-    <el-main>
-        <RouterView></RouterView>
-    </el-main>
+  <el-main>
+    <RouterView></RouterView>
+  </el-main>
 </template>
 
 <script setup lang="ts">
@@ -10,6 +10,6 @@ import { RouterView } from 'vue-router'
 
 <style lang="less">
 .el-main {
-    padding: 0px;
+  padding: 0px;
 }
 </style>

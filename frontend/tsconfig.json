@@ -12,11 +12,8 @@
     }
   ],
   "compilerOptions": {
-    "types": [
-      "node"
-    ],
-    "moduleResolution": "node",
+    "types": ["node"],
+    "moduleResolution": "node"
     // "types" :["element-plus/global"]
-  },
-  
+  }
 }

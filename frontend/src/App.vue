@@ -8,15 +8,14 @@
 </template>
 
 <script setup lang="ts">
-import HomeHeader from './views/HomeHeader.vue';
-import HomeMain from './views/HomeMain.vue';
-
+import HomeHeader from './views/HomeHeader.vue'
+import HomeMain from './views/HomeMain.vue'
 </script>
 
 <style lang="less">
 body {
   margin: 0;
-  overflow: hidden;   //解决切换路由时页面抖动：竖向滚动条闪烁
+  overflow: hidden; //解决切换路由时页面抖动：竖向滚动条闪烁
 }
 
 #app {

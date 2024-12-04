@@ -4,9 +4,8 @@ import { mount } from '@vue/test-utils'
 import { renderDataToApiDataWithMatch } from '../renderDataToApiData'
 
 describe('renderDataToApiData', () => {
-
-    it('Query Params MatchNodeData', () => {
-        const renderData = JSON.parse(`[
+  it('Query Params MatchNodeData', () => {
+    const renderData = JSON.parse(`[
             {
                 "id":"I80RJBZRZDDT",
                 "key":"search_term",
@@ -27,17 +26,18 @@ describe('renderDataToApiData', () => {
                 ]
             }
         ]`)
-        const actual = renderDataToApiDataWithMatch(renderData, {})
-        expect(actual).to.deep.equal(JSON.parse(`{
+    const actual = renderDataToApiDataWithMatch(renderData, {})
+    expect(actual).to.deep.equal(
+      JSON.parse(`{
             "search_term": {
                "equalTo": "WireMock"
             }
-        }`))
+        }`)
+    )
+  })
 
-    })
-
-    it('BodyPatterns MatchNodeData', () => {
-        const renderData = JSON.parse(`[
+  it('BodyPatterns MatchNodeData', () => {
+    const renderData = JSON.parse(`[
             {
                 "id":"V382NU6F3LHE",
                 "key":null,
@@ -62,12 +62,12 @@ describe('renderDataToApiData', () => {
                 ]
             }
         ]`)
-        const actual = renderDataToApiDataWithMatch(renderData, [])
-        expect(actual).to.deep.equal(JSON.parse(`[{
+    const actual = renderDataToApiDataWithMatch(renderData, [])
+    expect(actual).to.deep.equal(
+      JSON.parse(`[{
             "equalToJson": "{}",
             "ignoreExtraElements": true
-        }]`))
-
-    })
-
+        }]`)
+    )
+  })
 })

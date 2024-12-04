@@ -9,7 +9,8 @@
     "test:unit": "vitest",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write \"src/**/*.{js,ts,vue,json}\""
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
@@ -19,10 +20,12 @@
     "nanoid": "^4.0.2",
     "overlayscrollbars-vue": "^0.5.1",
     "pinia": "^2.0.36",
+    "prettier": "^3.4.2",
     "v-clipboard": "^3.0.0-next.1",
     "vue": "^3.3.2",
     "vue-json-viewer": "^3.0.4",
-    "vue-router": "^4.2.0"
+    "vue-router": "^4.2.0",
+    "wiremock-ui": "file:"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",

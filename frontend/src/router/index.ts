@@ -16,10 +16,10 @@ const router = createRouter({
         title: 'Tasks'
       }
     },
-    { 
-      path: '/:pathMatch(.*)*', 
-      name: 'NotFound', 
-      redirect: 'tasks' 
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      redirect: 'tasks'
     }
   ]
 })

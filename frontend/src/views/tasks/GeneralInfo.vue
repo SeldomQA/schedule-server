@@ -1,10 +1,10 @@
 <template>
   <el-form-item label="Job ID" prop="job_id">
-    <el-input v-model="selectedItem!.job_id"></el-input>
+    <el-input 
+      v-model="selectedItem!.job_id" 
+      :disabled="!props.isNewJob"
+    ></el-input>
   </el-form-item>
-  <!-- <el-form-item label="名称" prop="name">
-      <el-input v-model="selectedItem!.name" disabled></el-input>
-  </el-form-item> -->
   <el-form-item label="请求" prop="request_url">
     <el-input v-model="selectedItem!.request_url"></el-input>
   </el-form-item>
@@ -14,21 +14,26 @@
 </template>
 
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia'
 
 import { useShareStatesStore } from '@/stores/UseShareStatesStore'
+
+// 添加 props 定义
+const props = defineProps<{
+  isNewJob: boolean
+}>()
+
+console.log('isNewJob', props.isNewJob)
 
 const { selectedItem } = storeToRefs(useShareStatesStore())
 </script>
 
 <style lang="less" scoped>
 .input-3 {
-    width: calc(100%/3);
-    padding-right: 10px;
-
+  width: calc(100% / 3);
+  padding-right: 10px;
 }
 .last-input {
-    padding-right: 0px;
+  padding-right: 0px;
 }
-
 </style>
