@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-
+from apscheduler.jobstores.base import  JobLookupError
 from utils.scheduler_conf import scheduler
 
 from utils.response import response
@@ -141,9 +141,12 @@ def scheduler_remove_job(job_id: str):
     """
     移除定时任务
     """
-    s = scheduler()
-    s.start()
-    s.remove_job(job_id=job_id)
+    try:
+        s = scheduler()
+        s.start()
+        s.remove_job(job_id=job_id)
+    except JobLookupError:
+        return response(success=False, error={"10010": "删除Job ID不存在"})
     return response()
 
 
@@ -154,7 +157,11 @@ def scheduler_pause_job(job_id: str):
     """
     s = scheduler()
     s.start()
-    s.pause_job(job_id=job_id)
+    try:
+        s.pause_job(job_id=job_id)
+    except JobLookupError:
+        return response(success=False, error={"10011": "暂停Job ID不存在"})
+
     return response()
 
 
@@ -165,7 +172,10 @@ def scheduler_resume_job(job_id: str):
     """
     s = scheduler()
     s.start()
-    s.resume_job(job_id=job_id)
+    try:
+        s.resume_job(job_id=job_id)
+    except JobLookupError:
+        return response(success=False, error={"10012": "恢复Job ID不存在"})
     return response()
 
 
