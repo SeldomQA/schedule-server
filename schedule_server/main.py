@@ -46,6 +46,14 @@ def scheduler_date_add_job(job: DateJob):
     date 定时任务
     """
     s = scheduler()
+    # 检查并删除已存在的任务
+    try:
+        existing_job = s.get_job(job.job_id)
+        if existing_job:
+            s.remove_job(job.job_id)
+    except BaseException as msg:
+        logger.error(msg)
+
     job = s.add_job(
         requests_url,
         'date',
@@ -69,6 +77,14 @@ def scheduler_interval_add_job(job: IntervalJob):
     if job.hours is None and job.minutes is None and job.seconds is None:
         return response(error={"30001": "Please set the interval."})
     s = scheduler()
+    # 检查并删除已存在的任务
+    try:
+        existing_job = s.get_job(job.job_id)
+        if existing_job:
+            s.remove_job(job.job_id)
+    except BaseException as msg:
+        logger.error(msg)
+        
     job = s.add_job(
         requests_url,
         'interval',
@@ -92,6 +108,14 @@ def scheduler_cron_add_job(job: CronJob):
     cron 定时任务
     """
     s = scheduler()
+    # 检查并删除已存在的任务
+    try:
+        existing_job = s.get_job(job.job_id)
+        if existing_job:
+            s.remove_job(job.job_id)
+    except BaseException as msg:
+        logger.error(msg)
+
     job = s.add_job(
         requests_url,
         'cron',
@@ -112,7 +136,7 @@ def scheduler_cron_add_job(job: CronJob):
     return response(data={"job_id": job.id})
 
 
-@app.get("/scheduler/remove_job")
+@app.delete("/scheduler/remove_job")
 def scheduler_remove_job(job_id: str):
     """
     移除定时任务
@@ -123,7 +147,7 @@ def scheduler_remove_job(job_id: str):
     return response()
 
 
-@app.get("/scheduler/pause_job")
+@app.put("/scheduler/pause_job")
 def scheduler_pause_job(job_id: str):
     """
     暂停定时任务
@@ -134,7 +158,7 @@ def scheduler_pause_job(job_id: str):
     return response()
 
 
-@app.get("/scheduler/resume_job")
+@app.put("/scheduler/resume_job")
 def scheduler_resume_job(job_id: str):
     """
     恢复定时任务
@@ -152,14 +176,9 @@ def scheduler_resume_job(job_id: str = None):
     """
     s = scheduler()
     s.start()
-    jobs = []
-    if job_id is not None:
-        job = s.get_job(job_id=job_id)
-        if job is not None:
-            jobs.append(job)
-    else:
-        jobs = s.get_jobs()
-    schedules = []
+    jobs = s.get_jobs()
+    schedules_condition = []
+    schedules_all = []
     for job in jobs:
         job_type = None
         job_data = None
@@ -173,19 +192,39 @@ def scheduler_resume_job(job_id: str = None):
             job_type = "interval"
             job_data = interval_job_data(job.trigger)
 
-        schedules.append({
-            "job_id": job.id,
-            "name": job.name,
-            "type": job_type,
-            "data": job_data,
-            "request_url": get_job_name(job),
-            "next_run_time": job.next_run_time
-        })
+        if job_id is not None and job_id in job.id:
+            logger.info(f"condition - {job_id}, {job.id}")
+            schedules_condition.append({
+                "job_id": job.id,
+                "name": job.name,
+                "type": job_type,
+                "data": job_data,
+                "request_url": get_job_name(job),
+                "next_run_time": job.next_run_time
+            })
+        else:
+            logger.info(f"condition - {job_id}, {job.id}")
+            schedules_all.append({
+                "job_id": job.id,
+                "name": job.name,
+                "type": job_type,
+                "data": job_data,
+                "request_url": get_job_name(job),
+                "next_run_time": job.next_run_time
+            })
 
-    tasks = {
-        "task_list": schedules,
-        "total": len(schedules)
-    }
+    if job_id is not None:
+        logger.info("aaa")
+        tasks = {
+            "task_list": schedules_condition,
+            "total": len(schedules_condition)
+        }
+    else:
+        logger.info("bbb")
+        tasks = {
+            "task_list": schedules_all,
+            "total": len(schedules_all)
+        }
 
     return response(data=tasks)
 

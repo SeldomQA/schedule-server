@@ -1,9 +1,12 @@
 from pydantic import BaseModel
 
 
-class DateJob(BaseModel):
+class BaseJob(BaseModel):
     job_id: str
     url: str
+
+
+class DateJob(BaseJob):
     year: int  # 4位数
     month: int  # 1~12
     day: int  # 1 - 31
@@ -12,17 +15,13 @@ class DateJob(BaseModel):
     second: int  # 0 - 59s
 
 
-class IntervalJob(BaseModel):
-    job_id: str
-    url: str
+class IntervalJob(BaseJob):
     hours: int = None
     minutes: int = None
     seconds: int = None
 
 
-class CronJob(BaseModel):
-    job_id: str
-    url: str
+class CronJob(BaseJob):
     second: str = "*"  # 0 - 59s
     minute: str = "*"  # 0 - 59m
     hour: str = "*"  # 0-23h
