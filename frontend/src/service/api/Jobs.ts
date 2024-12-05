@@ -137,7 +137,7 @@ export const R_Job = (baseUrl: string, jobID: string) => {
 }
 
 /**
- * 删除指定【 mockUrl 】中，指定【 jobID 】的 mapping 信息
+ * 删除指定【 baseUrl 】中，指定【 jobID 】的 mapping 信息
  * @param baseUrl
  * @param jobID
  * @returns {*}
@@ -146,5 +146,31 @@ export const D_Job = (baseUrl: string, jobID: string) => {
   return httpSingle({
     url: `${baseUrl}/scheduler/remove_job?job_id=${jobID}`,
     method: 'delete'
+  })
+}
+
+/**
+ * 暂停指定【 baseUrl 】中，指定【 jobID 】的 mapping 信息
+ * @param baseUrl
+ * @param jobID
+ * @returns {*}
+ */
+export const Pause_Job = (baseUrl: string, jobID: string) => {
+  return httpSingle({
+    url: `${baseUrl}/scheduler/pause_job?job_id=${jobID}`,
+    method: 'put'
+  })
+}
+
+/**
+ * 回复指定【 baseUrl 】中，指定【 jobID 】的 mapping 信息
+ * @param baseUrl
+ * @param jobID
+ * @returns {*}
+ */
+export const Resume_Job = (baseUrl: string, jobID: string) => {
+  return httpSingle({
+    url: `${baseUrl}/scheduler/resume_job?job_id=${jobID}`,
+    method: 'put'
   })
 }

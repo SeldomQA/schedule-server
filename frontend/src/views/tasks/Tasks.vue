@@ -114,7 +114,7 @@
                 </template>
                 <el-popconfirm 
                   title="确定删除吗？" 
-                  @confirm="deleteStubMappingByID" 
+                  @confirm="deleteJobByID" 
                   width="150"
                   v-if="!isNewJob"
                 >
@@ -122,6 +122,22 @@
                     <el-button :icon="Delete" type="danger">删除</el-button>
                   </template>
                 </el-popconfirm>
+                <template v-if="!isNewJob">
+                  <el-button
+                    v-if="selectedItem.status === 'running'"
+                    type="primary"
+                    :icon="Refresh"
+                    @click="pauseJobByID"
+                    >暂停</el-button
+                  >
+                  <el-button
+                    v-else
+                    type="primary"
+                    :icon="Refresh"
+                    @click="resumeJobByID"
+                    >恢复</el-button
+                  >
+                </template>
               </el-form>
             </div>
             <!-- Form Edit/JSON View 切换 -->
@@ -189,7 +205,9 @@ import {
   C_CronJob,
   C_IntervalJob,
   D_Job,
-  R_Jobs
+  R_Jobs,
+  Resume_Job,
+  Pause_Job
 } from '@/service/api/Jobs'
 import type { IJob, DJob, CJob, TJob } from '@/service/api/Jobs'
 import type {
@@ -626,7 +644,7 @@ const resetStubMapping = () => {
  *
  * 如果是草稿项，直接移除；否则根据 ID 删除。
  */
-const deleteStubMappingByID = () => {
+const deleteJobByID = () => {
   if (!selectedItem.value) {
     return
   }
@@ -644,6 +662,40 @@ const deleteStubMappingByID = () => {
         ErrorHandler.create(err).end()
       })
   }
+}
+/**
+ * 暂停当前选中的 StubMapping。
+ */
+const pauseJobByID = () => {
+  if (!selectedItem.value) {
+    return
+  }
+  Pause_Job(baseUrl, selectedItem.value.job_id)
+   .then(() => {
+      ElMessage({ type: 'success', message: '暂停成功' })
+      getTasksJobs(false)
+    })
+    .catch(err => {
+      ErrorHandler.create(err).end()
+    })
+}
+
+
+/**
+ * 恢复当前选中的 StubMapping。
+ */
+const resumeJobByID = () => {
+  if (!selectedItem.value) {
+    return
+  }
+  Resume_Job(baseUrl, selectedItem.value.job_id)
+   .then(() => {
+      ElMessage({ type: 'success', message: '恢复成功' })
+      getTasksJobs(false)
+    })
+    .catch(err => {
+      ErrorHandler.create(err).end()
+    })
 }
 
 
