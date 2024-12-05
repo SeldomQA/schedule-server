@@ -228,13 +228,11 @@ def scheduler_resume_job(job_id: str = None):
             })
 
     if job_id is not None:
-        logger.info("aaa")
         tasks = {
             "task_list": schedules_condition,
             "total": len(schedules_condition)
         }
     else:
-        logger.info("bbb")
         tasks = {
             "task_list": schedules_all,
             "total": len(schedules_all)
