@@ -77,6 +77,7 @@ def scheduler_interval_add_job(job: IntervalJob):
     if job.hours is None and job.minutes is None and job.seconds is None:
         return response(error={"30001": "Please set the interval."})
     s = scheduler()
+    
     # 检查并删除已存在的任务
     try:
         existing_job = s.get_job(job.job_id)
@@ -95,9 +96,9 @@ def scheduler_interval_add_job(job: IntervalJob):
         hours=job.hours,
         minutes=job.minutes,
         seconds=job.seconds,
+        misfire_grace_time=None,  # 禁用misfire处理
+        coalesce=True  # 合并错过的执行
     )
-    s.start(paused=True)
-    s.pause()
 
     return response(data={"job_id": job.id})
 
