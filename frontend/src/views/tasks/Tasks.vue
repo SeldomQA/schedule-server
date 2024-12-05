@@ -153,14 +153,6 @@
                   </el-collapse-item>
                 </el-collapse>
               </el-form>
-              <!-- JSON View -->
-              <div class="detail-preview" v-show="!isShowFormEdit">
-                <json-viewer
-                  :value="selectedItemView"
-                  :copyable="{ copyText: '复制', copiedText: '已复制' }"
-                  :expand-depth="10"
-                ></json-viewer>
-              </div>
             </el-scrollbar>
           </el-col>
         </el-row>
@@ -509,18 +501,15 @@ const localSearch = (item: any) => {
  * @param index 被选中的列表项索引
  */
 const onClickListItem = (item: IJob, index: number) => {
-  console.log('switch', item)
   if (selectedItem && selectedItem.value === tableData.value[index]) {
     return
   }
 
   let removeFirst = false
   if (!tableData.value[0].job_id) {
-    console.log('removeFirst==true')
     removeFirst = true
   }
   saveItemBeforeNextAction().then((action: Action) => {
-    console.log("action", action)
     if (action === 'confirm' || action === 'cancel') {
       switchSelectedItem(removeFirst && action === 'cancel' ? --index : index)
     }
@@ -551,7 +540,6 @@ const saveStubMapping = () => {
   if (!selectedItem.value) {
     return
   }
-  console.log('ss')
 
   if (selectedItem.value.job_id) {
     if (selectedItem.value.type === 'date') {
@@ -654,12 +642,6 @@ const deleteStubMappingByID = () => {
 }
 
 
-// 3.2 JSON 预览
-const selectedItemView = computed(() => {
-  // const clonedItem = JSON.parse(JSON.stringify(selectedItem.value))
-  // return renderDataToApiData(clonedItem)
-})
-
 // ###### 辅助方法 ######
 
 const saveItemBeforeNextAction = async (): Promise<Action> => {
@@ -688,8 +670,6 @@ const saveItemBeforeNextAction = async (): Promise<Action> => {
 
       // 如果是添加未保存的数据
       if (selectedItem.value.job_id) {
-        console.log('s', selectedItem.value.job_id)
-        console.log('s', selectedItem.value.type)
         if (selectedItem.value.type === 'date') {
           const data = selectedItem.value.data as JobData
           const myJob: DJob = {

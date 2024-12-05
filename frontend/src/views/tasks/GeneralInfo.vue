@@ -23,8 +23,6 @@ const props = defineProps<{
   isNewJob: boolean
 }>()
 
-console.log('isNewJob', props.isNewJob)
-
 const { selectedItem } = storeToRefs(useShareStatesStore())
 </script>
 
