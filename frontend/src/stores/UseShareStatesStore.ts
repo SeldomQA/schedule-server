@@ -1,6 +1,5 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { IStubMapping } from '@/service/api/StubMappings'
 import type { IJob } from '@/service/api/Jobs'
 
 export const useShareStatesStore = defineStore('shareStatesStore', () => {
