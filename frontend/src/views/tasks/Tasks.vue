@@ -265,7 +265,7 @@ const createEmptyJob = (type: 'interval' | 'date' | 'cron' = 'interval'): IJob =
           day_of_week: '*',
           hour: '*',
           minute: '*',
-          second: '*'
+          second: '0'
         }
       }
     case 'date':
@@ -307,7 +307,7 @@ const processJobData = (item: IJob) => {
         day_of_week: cronData.day_of_week || '*',
         hour: cronData.hour || '*',
         minute: cronData.minute || '*',
-        second: cronData.second || '*'
+        second: cronData.second || '0'
       }
     }
   } else if (item.type === 'date') {
