@@ -39,7 +39,6 @@
       </div>
     </div>
   </el-header>
-  <Projects />
 </template>
 
 <script lang="ts" setup>
