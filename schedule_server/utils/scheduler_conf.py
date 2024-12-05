@@ -19,12 +19,13 @@ def scheduler():
     }
 
     executors = {
-        'default': ThreadPoolExecutor(20),
-        'processpool': ProcessPoolExecutor(5)
+        'default': ThreadPoolExecutor(1),
+        'processpool': ProcessPoolExecutor(1)
     }
     job_defaults = {
-        'coalesce': False,
-        'max_instances': 3
+        'coalesce': True,  # 合并执行
+        'max_instances': 1,    # 最大实例数为1
+        'misfire_grace_time': 60  # 设置一个合理的misfire宽限时间
     }
     bs = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
 

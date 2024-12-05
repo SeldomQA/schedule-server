@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class BaseJob(BaseModel):
@@ -22,7 +22,7 @@ class IntervalJob(BaseJob):
 
 
 class CronJob(BaseJob):
-    second: str = "*"  # 0 - 59s
+    second: str = "0"  # 0 - 59s
     minute: str = "*"  # 0 - 59m
     hour: str = "*"  # 0-23h
     day: str = "*"  # 1 - 31

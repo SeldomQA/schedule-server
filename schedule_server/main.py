@@ -117,6 +117,10 @@ def scheduler_cron_add_job(job: CronJob):
     except BaseException as msg:
         logger.error(msg)
 
+    # 确保second字段为'0'，避免每秒触发
+    if job.second == '*':
+        job.second = '0'
+    
     job = s.add_job(
         requests_url,
         'cron',
@@ -130,9 +134,9 @@ def scheduler_cron_add_job(job: CronJob):
         day=job.day,
         month=job.month,
         day_of_week=job.day_of_week,
+        misfire_grace_time=60,
+        coalesce=True
     )
-    s.start(paused=True)
-    s.pause()
 
     return response(data={"job_id": job.id})
 
