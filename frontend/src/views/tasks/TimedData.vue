@@ -12,30 +12,30 @@
     </el-form-item>
     <div v-if="selectedItem!.type === 'interval'">
       <el-form-item label="Hours">
-        <el-input-number v-model="selectedItem!.data.hour" :min="0" style="width: 150px" />
+        <el-input-number v-model="(selectedItem!.data as IntervalJobData).hour" :min="0" style="width: 150px" />
       </el-form-item>
       <el-form-item label="Minutes">
-        <el-input-number v-model="selectedItem!.data.minute" :min="0" style="width: 150px" />
+        <el-input-number v-model="(selectedItem!.data as IntervalJobData).minute" :min="0" style="width: 150px" />
       </el-form-item>
       <el-form-item label="Seconds">
-        <el-input-number v-model="selectedItem!.data.second" :min="0" style="width: 150px" />
+        <el-input-number v-model="(selectedItem!.data as IntervalJobData).second" :min="0" style="width: 150px" />
       </el-form-item>
     </div>
     <div v-else-if="selectedItem!.type === 'cron'">
       <el-form-item label="Second">
-        <el-input v-model="selectedItem!.data.second" style="width: 150px" />
+        <el-input v-model="(selectedItem!.data as CronJobData).second" style="width: 150px" />
       </el-form-item>
       <el-form-item label="Minute">
-        <el-input v-model="selectedItem!.data.minute" style="width: 150px" />
+        <el-input v-model="(selectedItem!.data as CronJobData).minute" style="width: 150px" />
       </el-form-item>
       <el-form-item label="Hour">
-        <el-input v-model="selectedItem!.data.hour" style="width: 150px" />
+        <el-input v-model="(selectedItem!.data as CronJobData).hour" style="width: 150px" />
       </el-form-item>
       <el-form-item label="Day">
-        <el-input v-model="selectedItem!.data.day" style="width: 150px" />
+        <el-input v-model="(selectedItem!.data as CronJobData).day" style="width: 150px" />
       </el-form-item>
       <el-form-item label="Day of week">
-        <el-input v-model="selectedItem!.data.day_of_week" style="width: 150px" />
+        <el-input v-model="(selectedItem!.data as CronJobData).day_of_week" style="width: 150px" />
       </el-form-item>
     </div>
     <div v-else-if="selectedItem!.type === 'date'">
@@ -59,13 +59,20 @@
 import { storeToRefs } from 'pinia'
 import { watch, ref, onMounted } from 'vue'
 import { useShareStatesStore } from '@/stores/UseShareStatesStore'
+import type { 
+  IJob, 
+  DateJobData,    // 添加 DateJobData
+  CronJobData,    // 添加 CronJobData
+  IntervalJobData // 添加 IntervalJobData
+} from '@/service/api/Jobs'
 
 const { selectedItem } = storeToRefs(useShareStatesStore())
 const dateValue = ref<number>()
 
 // 添加 props 接收 isNewJob
 const props = defineProps<{
-  isNewJob: boolean
+  isNewJob: boolean,
+  createEmptyJob: (type: 'interval' | 'date' | 'cron') => IJob
 }>()
 
 // 将日期对象转换为时间戳
@@ -133,19 +140,9 @@ const shortcuts = [
 watch(() => selectedItem.value?.type, (newType) => {
   if (!selectedItem.value || !props.isNewJob) return
   
-  if (newType === 'date') {
-    const now = new Date()
-    dateValue.value = now.getTime()
-    selectedItem.value.data = {
-      year: now.getFullYear(),
-      month: now.getMonth() + 1,
-      day: now.getDate(),
-      hour: now.getHours(),
-      minute: now.getMinutes(),
-      second: now.getSeconds()
-    }
-  }
-  // ... 其他类型的处理保持不变
+  // 根据新类型设置默认值
+  const newJob = props.createEmptyJob(newType as 'interval' | 'date' | 'cron')
+  selectedItem.value.data = newJob.data
 })
 
 // 组件挂载时初始化日期值

@@ -149,7 +149,7 @@
                     <template #title>
                       <b>定时信息</b>
                     </template>
-                    <timed-data :is-new-job="isNewJob"></timed-data>
+                    <timed-data :is-new-job="isNewJob" :create-empty-job="createEmptyJob"></timed-data>
                   </el-collapse-item>
                 </el-collapse>
               </el-form>
@@ -182,15 +182,27 @@ import {
   RefreshLeft,
   Finished,
   Delete,
-  CopyDocument
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox, type Action } from 'element-plus'
 
 import { isEmpty, cloneJson } from '@/lib/helper'
 import { ErrorHandler } from '@/lib/axios'
 import { useShareStatesStore } from '@/stores/UseShareStatesStore'
-import { R_Job, C_DateJob, C_CronJob, C_IntervalJob, D_Job, R_Jobs } from '@/service/api/Jobs'
+import {
+  R_Job,
+  C_DateJob,
+  C_CronJob,
+  C_IntervalJob,
+  D_Job,
+  R_Jobs
+} from '@/service/api/Jobs'
 import type { IJob, DJob, CJob, TJob } from '@/service/api/Jobs'
+import type {
+  DateJobData,
+  CronJobData,
+  IntervalJobData
+} from '@/service/api/Jobs'
+
 import { jobDataStyle } from '@/service/render/style'
 
 import GeneralInfo from './GeneralInfo.vue'
@@ -206,76 +218,115 @@ onMounted(() => {
   console.log('--->', selectedItem)
 })
 
-// 在文件顶部添加空 Job 对象工厂函数
-const createEmptyJob = (): IJob => {
-  return {
-    job_id: '',
-    type: 'interval',
-    name: '',
-    request_url: '',
-    next_run_time: '',
-    data: {
-      hour: 0,
-      minute: 10,
-      second: 0
-    }
+// 创建不同类型的空 Job
+const createEmptyJob = (type: 'interval' | 'date' | 'cron' = 'interval'): IJob => {
+  const timestamp = Date.parse(new Date().toString())
+  const baseJob = {
+    job_id: 'job_' + timestamp,
+    type: type,
+    name: 'requests_url',
+    request_url: 'https://httpbin.org/get?id=1',
+    next_run_time: ''
+  }
+
+  // 根据类型设置不同的默认数据
+  switch (type) {
+    case 'interval':
+      return {
+        ...baseJob,
+        data: {
+          hour: 0,
+          minute: 10,
+          second: 0
+        }
+      }
+    case 'cron':
+      return {
+        ...baseJob,
+        data: {
+          year: '*',
+          month: '*',
+          day: '*',
+          week: '*',
+          day_of_week: '*',
+          hour: '*',
+          minute: '*',
+          second: '*'
+        }
+      }
+    case 'date':
+      const now = new Date()
+      return {
+        ...baseJob,
+        data: {
+          year: now.getFullYear(),
+          month: now.getMonth() + 1,
+          day: now.getDate(),
+          hour: now.getHours(),
+          minute: now.getMinutes(),
+          second: now.getSeconds()
+        }
+      }
   }
 }
 
+// 修改数据处理部分
+const processJobData = (item: IJob) => {
+  const baseItem = {
+    job_id: item.job_id || '',
+    type: item.type || 'date',
+    name: item.name || '',
+    request_url: item.request_url || '',
+    next_run_time: item.next_run_time || ''
+  }
+
+  if (item.type === 'cron') {
+    const cronData = item.data as CronJobData
+    return {
+      ...baseItem,
+      data: {
+        year: cronData.year || '*',
+        month: cronData.month || '*',
+        day: cronData.day || '*',
+        week: cronData.week || '*',
+        day_of_week: cronData.day_of_week || '*',
+        hour: cronData.hour || '*',
+        minute: cronData.minute || '*',
+        second: cronData.second || '*'
+      }
+    }
+  } else if (item.type === 'date') {
+    const dateData = item.data as DateJobData
+    return {
+      ...baseItem,
+      data: {
+        year: Number(dateData.year) || 0,
+        month: Number(dateData.month) || 0,
+        day: Number(dateData.day) || 0,
+        hour: Number(dateData.hour) || 0,
+        minute: Number(dateData.minute) || 0,
+        second: Number(dateData.second) || 0
+      }
+    }
+  } else {
+    const intervalData = item.data as IntervalJobData
+    return {
+      ...baseItem,
+      data: {
+        hour: Number(intervalData.hour) || 0,
+        minute: Number(intervalData.minute) || 0,
+        second: Number(intervalData.second) || 0
+      }
+    }
+  }
+}
 
 const getTasksJobs = async (isUserAction: boolean) => {
   try {
     const res = await R_Jobs(baseUrl)
     const taskList = res?.data?.task_list || []
     
-    tableData.value = taskList.map((item: IJob) => {
-      const baseItem = {
-        job_id: item.job_id || '',
-        type: item.type || 'date',
-        name: item.name || '',
-        request_url: item.request_url || '',
-        next_run_time: item.next_run_time || ''
-      }
-
-      // 根据任务类型处理不同的数据结构
-      if (item.type === 'cron') {
-        return {
-          ...baseItem,
-          data: {
-            year: item.data?.year || '*',
-            month: item.data?.month || '*',
-            day: item.data?.day || '*',
-            week: item.data?.week || '*',
-            day_of_week: item.data?.day_of_week || '*',
-            hour: item.data?.hour || '*',
-            minute: item.data?.minute || '*',
-            second: item.data?.second || '*'
-          }
-        }
-      } else if (item.type === 'interval') {
-        return {
-          ...baseItem,
-          data: {
-            hour: Number(item.data?.hour) || 0,
-            minute: Number(item.data?.minute) || 0,
-            second: Number(item.data?.second) || 0
-          }
-        }
-      } else {
-        // date 类型
-        return {
-          ...baseItem,
-          data: {
-            year: Number(item.data?.year) || 0,
-            month: Number(item.data?.month) || 0,
-            day: Number(item.data?.day) || 0,
-            hour: Number(item.data?.hour) || 0,
-            minute: Number(item.data?.minute) || 0,
-            second: Number(item.data?.second) || 0
-          }
-        }
-      }
-    })
+    tableData.value = taskList.map(processJobData)
 
     total.value = res?.data?.total || 0
     
@@ -361,54 +412,7 @@ const getJobByID = async () => {
     const res = await R_Job(baseUrl, jobID.value)
     const taskList = res?.data?.task_list || []
     
-    tableData.value = taskList.map((item: IJob) => {
-      const baseItem = {
-        job_id: item.job_id || '',
-        type: item.type || 'date',
-        name: item.name || '',
-        request_url: item.request_url || '',
-        next_run_time: item.next_run_time || ''
-      }
-
-      // 根据任务类型处理不同的数据结构
-      if (item.type === 'cron') {
-        return {
-          ...baseItem,
-          data: {
-            year: item.data?.year || '*',
-            month: item.data?.month || '*',
-            day: item.data?.day || '*',
-            week: item.data?.week || '*',
-            day_of_week: item.data?.day_of_week || '*',
-            hour: item.data?.hour || '*',
-            minute: item.data?.minute || '*',
-            second: item.data?.second || '*'
-          }
-        }
-      } else if (item.type === 'interval') {
-        return {
-          ...baseItem,
-          data: {
-            hour: Number(item.data?.hour) || 0,
-            minute: Number(item.data?.minute) || 0,
-            second: Number(item.data?.second) || 0
-          }
-        }
-      } else {
-        // date 类型
-        return {
-          ...baseItem,
-          data: {
-            year: Number(item.data?.year) || 0,
-            month: Number(item.data?.month) || 0,
-            day: Number(item.data?.day) || 0,
-            hour: Number(item.data?.hour) || 0,
-            minute: Number(item.data?.minute) || 0,
-            second: Number(item.data?.second) || 0
-          }
-        }
-      }
-    })
+    tableData.value = taskList.map(processJobData)
 
     total.value = res?.data?.total || 0
     
@@ -451,20 +455,10 @@ const getJobByID = async () => {
  */
 const addJob = () => {
   if (tableData.value.length && !tableData.value[0].job_id) return
-  let timestamp = Date.parse(new Date().toString())
-  const item: IJob = {
-    job_id: 'job_' + timestamp,
-    type: 'interval',
-    name: 'requests_url',
-    request_url: 'https://httpbin.org/get?id=1',
-    next_run_time: '',
-    data: {
-      hour: 0,
-      minute: 10,
-      second: 0
-    }
-  }
-
+  
+  // 创建一个 interval 类型的新 job
+  const item = createEmptyJob('interval')
+  
   isNewJob.value = true
   tableData.value.unshift(item)
   switchSelectedItem(0)
@@ -752,7 +746,7 @@ const saveItemBeforeNextAction = async (): Promise<Action> => {
       }
     })
     .catch((action: Action) => {
-      // 放弃修改或关闭弹窗
+      // 放弃修改或关闭弹
       userAction = action
       if (action === 'cancel') {
         if (!tableData.value[0].job_id) {

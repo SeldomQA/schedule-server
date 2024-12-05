@@ -1,7 +1,7 @@
 import { httpSingle } from '@/lib/axios'
 
 // 定义不同类型任务的数据结构
-interface DateJobData {
+export interface DateJobData {
   year: number
   month: number
   day: number
@@ -10,7 +10,7 @@ interface DateJobData {
   second: number
 }
 
-interface CronJobData {
+export interface CronJobData {
   year: string | number
   month: string | number
   day: string | number
@@ -21,7 +21,7 @@ interface CronJobData {
   second: string | number
 }
 
-interface IntervalJobData {
+export interface IntervalJobData {
   hour: number
   minute: number
   second: number
