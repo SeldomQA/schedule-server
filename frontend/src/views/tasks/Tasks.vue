@@ -12,6 +12,7 @@
               clearable
               v-model="jobID"
               @clear="refreshListData"
+              @keydown.enter.prevent
             >
               <template #append>
                 <el-button :icon="Search" @click="getJobByID"></el-button>
@@ -146,7 +147,7 @@
                   <!-- timed -->
                   <el-collapse-item name="Timed">
                     <template #title>
-                      <b>定时</b>
+                      <b>定时信息</b>
                     </template>
                     <timed-data :is-new-job="isNewJob"></timed-data>
                   </el-collapse-item>
@@ -494,7 +495,7 @@ const isUnsave = computed(() => (item: IJob) => {
 /**
  * 本地搜索，筛选列表中符合查询条件的列表项。
  *
- * 如果参数符合查���条件，则返回 true。
+ * 如果参数符合查条件，则返回 true。
  *
  * @param item 当前列表项数据
  */
