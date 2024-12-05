@@ -7,8 +7,17 @@ Schedule-Server前端UI，用于 `定时任务` 数据的可视化管理。
 
 ### 1.1. 本地启动
 
-1. `npm install` 安装项目依赖。
-2. 以开发模式启动项目：`npm run dev`。
+1. 安装项目依赖。
+
+```shell
+npm install
+```
+
+2. 以开发模式启动项目。
+
+```shell
+npm run dev
+```
 
 ### 1.2. 私有部署
 
@@ -37,16 +46,16 @@ Nginx 配置。
 
 **二级目录部署**
 
-vite.config.ts 中修改二级目录路径，这里是 wiremock。
+vite.config.ts 中修改二级目录路径，这里是 schedule。
 
 ```
-base: '/wiremock',
+base: '/schedule',
 ```
 
 Nginx 配置。
 
 ```
-    location ^~ /wiremock {
+    location ^~ /schedule {
         alias /home/wwwroot/frontend/;
         index index.html;
         try_files $uri $uri/ /frontend/index.html;
@@ -59,7 +68,3 @@ Nginx 配置。
 
 - 以开发模式启动项目：`npm run dev`。
 - 运行单元测试：`npm run test:unit`。
-
-## 3. Todo List
-
-- [ ] feature：...
