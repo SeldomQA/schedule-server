@@ -202,6 +202,8 @@ def scheduler_resume_job(job_id: str = None):
             job_type = "interval"
             job_data = interval_job_data(job.trigger)
 
+        status = "running" if job.next_run_time is not None else "paused"
+
         if job_id is not None and job_id in job.id:
             logger.info(f"condition - {job_id}, {job.id}")
             schedules_condition.append({
@@ -210,7 +212,8 @@ def scheduler_resume_job(job_id: str = None):
                 "type": job_type,
                 "data": job_data,
                 "request_url": get_job_name(job),
-                "next_run_time": job.next_run_time
+                "next_run_time": job.next_run_time,
+                "status": status
             })
         else:
             logger.info(f"condition - {job_id}, {job.id}")
@@ -220,7 +223,8 @@ def scheduler_resume_job(job_id: str = None):
                 "type": job_type,
                 "data": job_data,
                 "request_url": get_job_name(job),
-                "next_run_time": job.next_run_time
+                "next_run_time": job.next_run_time,
+                "status": status
             })
 
     if job_id is not None:
@@ -260,13 +264,16 @@ def scheduler_resume_job(job_id: str):
         job_type = "interval"
         job_data = interval_job_data(job.trigger)
 
+    status = "running" if job.next_run_time is not None else "paused"
+
     schedule = {
         "job_id": job.id,
         "name": job.name,
         "type": job_type,
         "data": job_data,
         "request_url": get_job_name(job),
-        "next_run_time": job.next_run_time
+        "next_run_time": job.next_run_time,
+        "status": status
     }
 
     return response(data=schedule)

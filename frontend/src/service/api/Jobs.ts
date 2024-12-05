@@ -34,6 +34,7 @@ export interface IJob {
   type: 'date' | 'cron' | 'interval'
   request_url: string
   next_run_time: string
+  status: string
   data: DateJobData | CronJobData | IntervalJobData
 }
 

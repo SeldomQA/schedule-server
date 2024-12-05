@@ -68,8 +68,11 @@
                       </div>
                     </label>
                     <label class="second-line">
-                      <el-tag size="small" :type="jobDataStyle('type')">
+                      <el-tag size="small">
                         {{ item.type }}
+                      </el-tag>
+                      <el-tag size="small" :type="jobStatusStyle(item.status)" style="float: right">
+                        {{ item.status }}
                       </el-tag>
                     </label>
                   </div>
@@ -195,7 +198,7 @@ import type {
   IntervalJobData
 } from '@/service/api/Jobs'
 
-import { jobDataStyle } from '@/service/render/style'
+import { jobStatusStyle } from '@/service/render/style'
 
 import GeneralInfo from './GeneralInfo.vue'
 import TimedData from './TimedData.vue'
@@ -218,7 +221,8 @@ const createEmptyJob = (type: 'interval' | 'date' | 'cron' = 'interval'): IJob =
     type: type,
     name: 'requests_url',
     request_url: 'https://httpbin.org/get?id=1',
-    next_run_time: ''
+    next_run_time: '',
+    status: ''
   }
 
   // 根据类型设置不同的默认数据
@@ -269,7 +273,8 @@ const processJobData = (item: IJob) => {
     type: item.type || 'date',
     name: item.name || '',
     request_url: item.request_url || '',
-    next_run_time: item.next_run_time || ''
+    next_run_time: item.next_run_time || '',
+    status: item.status || ''
   }
 
   if (item.type === 'cron') {
