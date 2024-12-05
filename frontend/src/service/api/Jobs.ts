@@ -1,52 +1,71 @@
-import { httpSingle } from '@/lib/axios';
+import { httpSingle } from '@/lib/axios'
 
-
-export interface IJob {
-  job_id?: string,               // job ID
-  name?: string,                 //job 名称
-  next_run_time?: string,         // 下一次运行的时间
-  request_url?: string,          // 请求的 URL 地址
-  type: string,                  // 定时任务类型
-  data: {
-    day?: [string, number],
-    day_of_week?: [string, number],
-    hour?: [string, number],
-    minute?: [string, number],
-    month?: [string, number],
-    second?: [string, number],
-    week?: [string, number],
-    year?: [string, number]
-  }
+// 定义不同类型任务的数据结构
+interface DateJobData {
+  year: number
+  month: number
+  day: number
+  hour: number
+  minute: number
+  second: number
 }
 
+interface CronJobData {
+  year: string | number
+  month: string | number
+  day: string | number
+  week?: string
+  day_of_week: string
+  hour: string | number
+  minute: string | number
+  second: string | number
+}
+
+interface IntervalJobData {
+  hour: number
+  minute: number
+  second: number
+}
+
+// 主接口定义
+export interface IJob {
+  job_id: string
+  name: string
+  type: 'date' | 'cron' | 'interval'
+  request_url: string
+  next_run_time: string
+  data: DateJobData | CronJobData | IntervalJobData
+}
+
+// API 请求参数接口定义
 export interface DJob {
-  job_id?: string,            // job ID
-  url?: string,               // 请求的 URL 地址
-  year?: [string, number],
-  month?: [string, number],
-  day?: [string, number],
-  hour?: [string, number],
-  minute?: [string, number],
-  second?: [string, number]
+  job_id?: string
+  url?: string
+  year: number
+  month: number
+  day: number
+  hour: number
+  minute: number
+  second: number
 }
 
 export interface CJob {
-  job_id?: string,            // job ID
-  url?: string,               // 请求的 URL 地址
-  day_of_week?: [string, number],
-  month?: [string, number],
-  day?: [string, number],
-  hour?: [string, number],
-  minute?: [string, number],
-  second?: [string, number]
+  job_id?: string
+  url?: string
+  day_of_week: string
+  month: string
+  day: string
+  hour: string
+  minute: string
+  second: string
 }
 
 export interface TJob {
-  job_id?: string,            // job ID
-  url?: string,               // 请求的 URL 地址
-  hours?: [string, number],
-  minutes?: [string, number],
-  seconds?: [string, number]
+  job_id?: string
+  url?: string
+  hours: number
+  minutes: number
+  seconds: number
 }
 
 /**
@@ -60,8 +79,8 @@ export const C_DateJob = (baseUrl: string, params: DJob) => {
     url: `${baseUrl}/scheduler/date/add_job`,
     method: 'post',
     data: params
-  });
-};
+  })
+}
 
 /**
  * 指定【 baseUrl 】新增 cron定时任务
@@ -74,8 +93,8 @@ export const C_CronJob = (baseUrl: string, params: CJob) => {
     url: `${baseUrl}/scheduler/cron/add_job`,
     method: 'post',
     data: params
-  });
-};
+  })
+}
 
 /**
  * 指定【 baseUrl 】新增 interval定时任务
@@ -88,8 +107,8 @@ export const C_IntervalJob = (baseUrl: string, params: TJob) => {
     url: `${baseUrl}/scheduler/interval/add_job`,
     method: 'post',
     data: params
-  });
-};
+  })
+}
 
 /**
  * 查询指定【 baseUrl 】jobs 列表数据
@@ -100,8 +119,8 @@ export const R_Jobs = (baseUrl: string) => {
   return httpSingle({
     url: `${baseUrl}/scheduler/get_jobs`,
     method: 'get'
-  });
-};
+  })
+}
 
 /**
  * 查询指定【 baseUrl 】中，指定【 jobID 】的 mapping 信息
@@ -113,8 +132,8 @@ export const R_Job = (baseUrl: string, jobID: string) => {
   return httpSingle({
     url: `${baseUrl}/scheduler/get_jobs?job_id=${jobID}`,
     method: 'get'
-  });
-};
+  })
+}
 
 /**
  * 删除指定【 mockUrl 】中，指定【 jobID 】的 mapping 信息
@@ -126,5 +145,5 @@ export const D_Job = (baseUrl: string, jobID: string) => {
   return httpSingle({
     url: `${baseUrl}/scheduler/remove_job?job_id=${jobID}`,
     method: 'delete'
-  }); 
-};
+  })
+}
