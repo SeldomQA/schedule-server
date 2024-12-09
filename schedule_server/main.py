@@ -109,6 +109,7 @@ def scheduler_cron_add_job(job: CronJob):
     cron 定时任务
     """
     s = scheduler()
+    s.start()
     # 检查并删除已存在的任务
     try:
         existing_job = s.get_job(job.job_id)
