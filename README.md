@@ -32,7 +32,11 @@ INFO:     Started reloader process [21905] using StatReload
 INFO:     Started server process [21907]
 INFO:     Waiting for application startup.
 ```
+* deploy
 
+```shell
+> uvicorn main:app --workers 1 --host 127.0.0.1 --port 8004 &
+```
 __查看API__
 
 访问url: http://127.0.0.1:8000/docs
