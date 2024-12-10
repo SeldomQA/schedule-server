@@ -14,14 +14,14 @@ Scheduled task service based on APScheduler, You can dynamically add scheduled t
 
 ### schedule_server
 
-* install 
+__安装依赖__ 
 
 ```shell
 > cd schedule_server
 > pip install -r requirements.txt
 ```
 
-* running
+__开发运行__
 
 ```shell
 > uvicorn main:app --reload
@@ -32,11 +32,26 @@ INFO:     Started reloader process [21905] using StatReload
 INFO:     Started server process [21907]
 INFO:     Waiting for application startup.
 ```
-* deploy
+
+__部署运行__
+
+指定IP和端口
 
 ```shell
 > uvicorn main:app --workers 1 --host 127.0.0.1 --port 8004 &
 ```
+
+nginx配置
+
+```conf
+location /scheduler/ {
+  proxy_pass http://127.0.0.1:8004;
+  proxy_pass_request_headers      on;
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+```
+
 __查看API__
 
 访问url: http://127.0.0.1:8000/docs
