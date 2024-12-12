@@ -1,18 +1,28 @@
-# schedule-server
+# 通用的定时任务工具 schedule-server
 
-Scheduled task service based on APScheduler, You can dynamically add scheduled tasks.
+> 背景: 我曾经在一个自动化测试平台中集成定时任务，基于 APScheduler 库花了好长时间解决重复执行的问题。定时任务集成在服务中也让服务变得复杂。最后，我们选择了公司其他团队go语言开发的一个定时任务服务。于是萌生了想法，和不用 Python实现一个通用的定时任务服务。于是，schedule-server应运而生。
 
-## How to work
+GitHub地址: https://github.com/SeldomQA/schedule-server
 
-![](/image/schedule.png)
+## schedule-server 特点
+
+* 运行与部署简单。
+* 基于HTTP触发请求。
+* 支持三种类型的定时任务：`crontab`、`interval`、`date`
+* 支持定时任务的`查询`、`删除`、`添加`、`暂停/恢复`等操作。
+
+
+## schedule-server 架构图
+
+![](../image/schedule.png)
 
 * `schedule_server`: 核心功能是定时触发HTTP请求。
 * `fontend`: 通过前端UI管理定时任务。
-* `you server`: 你也可以通过调接口的方式管理定时任务。
+* `you server`: 在你的服务中通过调接口的方式管理定时任务。
+* `SQLite`: 用于保存定时任务服务。
+* `Redis`: 通过Redis锁解决重复触发的问题。
 
-## Starting the service
-
-### schedule_server
+## 安装与运行
 
 __安装依赖__ 
 
@@ -33,41 +43,25 @@ INFO:     Started server process [21907]
 INFO:     Waiting for application startup.
 ```
 
-__部署运行__
-
-指定IP和端口
-
-```shell
-> uvicorn main:app --workers 1 --host 127.0.0.1 --port 8004 &
-```
-
-nginx配置
-
-```conf
-location /scheduler/ {
-  proxy_pass http://127.0.0.1:8004;
-  proxy_pass_request_headers      on;
-  proxy_set_header Host $host;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-}
-```
 
 __查看API__
 
-访问url: http://127.0.0.1:8000/docs
+访问URL: http://127.0.0.1:8000/docs
 
-![](/image/api_doc.png)
+![](../image/api_doc.png)
 
 
-### frontend
+## 前端服务
 
-* install 
+使用schedule_server服务可以不需要前端，但是，你想可视化的方法管理定时任务，我还为此专门开发了个前端服务。
+
+__安装依赖__
 
 ```shell
 > npm install
 ```
 
-* running
+__运行服务__ 
 
 ```shell
 > npm run dev
@@ -80,15 +74,18 @@ __查看API__
   ➜  press h to show help
 ```
 
-__查看UI__
+__访问前端页面__
 
 访问url: http://localhost:5173/
 
-![](/image/frontend.png)
+![](../image/frontend.png)
 
-## How to use
 
-__date类型定时任务__
+## 定时类型
+
+schedule-server支持三种定时类型：`crontab`、`interval`、`date`，可以满足不同的需求。
+
+__date类型__
 
 data类型比较简单，适合固定的`日期时间`触发定时任务。
 
@@ -113,14 +110,10 @@ data类型比较简单，适合固定的`日期时间`触发定时任务。
 
 * 前端配置
 
-![](./image/date_type.png)
-
-> * job_id: 设置一个唯一的`job_id`，后面可以通过`job_id` 删除/暂停/恢复 定时任务。 
-> * url: 定时任务触发的url。
-> * datatime: 设置 `2022-11-18 07:00:00` 触发一次。这里用的是UTC时间，所以，北京时间你需要手动加8小时。
+![](../image/date_type.png)
 
 
-__interval类型定时任务__
+__interval类型__
 
 interval适合间隔时间`重复执行`的定时任务。
 
@@ -142,9 +135,11 @@ interval适合间隔时间`重复执行`的定时任务。
 
 * 前端配置
 
-![](./image/interval_type.png)
+![](../image/interval_type.png)
 
-__crontab类型定时任务__
+
+
+__cron类型__
 
 conn使一种复杂的定时任务，能够支持所有的定时任务需求。
 
@@ -174,24 +169,6 @@ conn使一种复杂的定时任务，能够支持所有的定时任务需求。
 ![](../image/cron_type.png)
 
 
-__其他接口__
+## 说明
 
-* 删除定时任务：
-  * URL:`http://127.0.0.1:8000/scheduler/remove_job?job_id=interval_job_222`
-  * Method: `DELETE`
-
-* 暂停定时任务：
-  * `http://127.0.0.1:8000/scheduler/pause_job?job_id=interval_job_222`
-  * Method: `PUT`
-
-* 恢复定时任务：
-  * URL：`http://127.0.0.1:8000/scheduler/resume_job?job_id=interval_job_222`
-  * Method: `PUT`
-
-* 查询定时任务：
-  * URL：`http://127.0.0.1:8000/scheduler/get_job?job_id=interval_job_222`
-  * Method：`GET`
-
-* 查询所有定时任务：
-  * URL：`http://127.0.0.1:8000/scheduler/get_jobs`
-  * Method: `GET`
+> 作为独立的定时任务服务， seldom-platfrom平台已经以非常低的成本接入了schedule-server服务，用于实现测试任务的定时触发，这种服务拆分方式有利于后期项目的维护和可插拔。schedule-server项目本身也可以有更多的应用场景。
