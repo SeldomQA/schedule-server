@@ -9,7 +9,7 @@ SQLITE_PATH = os.path.join(BASE_DIR, "jobs.sqlite")
 
 # redis address
 RedisCluster = [{
-    'host': 'localhost',
+    'host': '172.17.0.1',
     'port': 6379,
     'db': 0,
 }]
